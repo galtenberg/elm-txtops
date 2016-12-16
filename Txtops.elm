@@ -35,25 +35,26 @@ listView listModel = renderList listModel
 type alias TxtOpsModel = String
 
 -- MESSAGES
-type MsgTxt = NewTxt String
+type MsgTxt
+    = AreaUpdate String
+    | ButtonPressed
 
 -- UPDATE
---txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
---txtUpdate (NewTxt txt) oldTxt =
-  --( txt, Cmd.none )
 txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
 txtUpdate msg model = case msg of
-  NewTxt txt ->
+  AreaUpdate txt ->
     ( txt, Cmd.none )
+  ButtonPressed ->
+    ( "", Cmd.none )
 
 -- VIEW
 txtOpsView : TxtOpsModel -> Html MsgTxt
 txtOpsView txtOpsModel = div []
     [
       input [ cols 40, placeholder "Magic box" ] [ ]
-    , button [ onClick(NewTxt "hi") ] [ text "hi" ]
+    , button [ onClick ButtonPressed ] [ text "hi" ]
     , listView (splitStrings "Hello\n\nxorld")
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput NewTxt ] [ text txtOpsModel ]
+    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate ] [ text txtOpsModel ]
     ]
 
 -- SUBSCRIPTIONS
