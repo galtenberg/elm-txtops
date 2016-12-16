@@ -37,6 +37,7 @@ type alias TxtOpsModel = String
 -- MESSAGES
 type MsgTxt
     = AreaUpdate String
+    | AreaBlurred
     | ButtonPressed
 
 -- UPDATE
@@ -44,6 +45,8 @@ txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
 txtUpdate msg model = case msg of
   AreaUpdate txt ->
     ( txt, Cmd.none )
+  AreaBlurred ->
+    ( "", Cmd.none )
   ButtonPressed ->
     ( "", Cmd.none )
 
@@ -54,7 +57,7 @@ txtOpsView txtOpsModel = div []
       input [ cols 40, placeholder "Magic box" ] [ ]
     , button [ onClick ButtonPressed ] [ text "hi" ]
     , listView (splitStrings "Hello\n\nxorld")
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput (AreaUpdate), onBlur (AreaUpdate "blur") ] [ text txtOpsModel ]
+    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput (AreaUpdate), onBlur (AreaBlurred) ] [ text txtOpsModel ]
     ]
 
 -- SUBSCRIPTIONS
