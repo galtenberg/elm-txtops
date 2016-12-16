@@ -54,7 +54,7 @@ txtOpsView txtOpsModel = div []
       input [ cols 40, placeholder "Magic box" ] [ ]
     , button [ onClick ButtonPressed ] [ text "hi" ]
     , listView (splitStrings "Hello\n\nxorld")
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate ] [ text txtOpsModel ]
+    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput (AreaUpdate), onBlur (AreaUpdate "blur") ] [ text txtOpsModel ]
     ]
 
 -- SUBSCRIPTIONS
