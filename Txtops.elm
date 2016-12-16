@@ -38,9 +38,13 @@ type alias TxtOpsModel = String
 type MsgTxt = NewTxt String
 
 -- UPDATE
+--txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
+--txtUpdate (NewTxt txt) oldTxt =
+  --( txt, Cmd.none )
 txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
-txtUpdate (NewTxt txt) oldTxt =
-  ( txt, Cmd.none )
+txtUpdate msg model = case msg of
+  NewTxt txt ->
+    ( txt, Cmd.none )
 
 -- VIEW
 txtOpsView : TxtOpsModel -> Html MsgTxt
