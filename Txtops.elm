@@ -6,25 +6,34 @@ import Html.Events exposing (..)
 import String exposing (..)
 
 -------------------------------------------------------
--- ListModel
+-- TxtList
 
 -- MODEL
-type alias ListModel = List String
+type alias TxtList = List String
+
+type alias TxtModel =
+  { tempField : String
+  , tempArea : String
+  , txtList : TxtList
+  }
 
 -- FUNCTIONS
-splitStrings : String -> ListModel
+splitStrings : String -> TxtList
 splitStrings str = split "\n\n" str
+
+joinTxtList : TxtList -> String
+joinTxtList list = join "\n\n" list
 
 liText l = li [] [text l]
 
-renderList : ListModel -> Html MsgTxt
+renderList : TxtList -> Html MsgTxt
 renderList list =
     list
     |> List.map liText
     |> ul []
 
 -- VIEW
-listView : ListModel -> Html MsgTxt
+listView : TxtList -> Html MsgTxt
 listView listModel = renderList listModel
 
 
@@ -32,7 +41,7 @@ listView listModel = renderList listModel
 -- TxtBoxModel
 
 -- MODEL
-type alias TxtOpsModel = String
+--type alias TxtOpsModel = String
 
 -- MESSAGES
 type MsgTxt
@@ -41,38 +50,44 @@ type MsgTxt
     | ButtonPressed
 
 -- UPDATE
-txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
+--txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
+txtUpdate : MsgTxt -> TxtList -> ( TxtList, Cmd MsgTxt )
 txtUpdate msg model = case msg of
   AreaUpdate txt ->
-    ( txt, Cmd.none )
+    ( model ++ [txt], Cmd.none )
   AreaBlurred ->
-    ( "", Cmd.none )
+    ( model, Cmd.none )
   ButtonPressed ->
-    ( "", Cmd.none )
+    ( [""], Cmd.none )
 
 -- VIEW
-txtOpsView : TxtOpsModel -> Html MsgTxt
+--txtOpsView : TxtOpsModel -> Html MsgTxt
+txtOpsView : TxtList -> Html MsgTxt
 txtOpsView txtOpsModel = div []
     [
-      input [ cols 40, placeholder "Magic box" ] [ ]
-    , button [ onClick ButtonPressed ] [ text "hi" ]
-    , listView (splitStrings "Hello\n\nxorld")
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput (AreaUpdate), onBlur (AreaBlurred) ] [ text txtOpsModel ]
+      input [ cols 40, placeholder "Feed me txt" ] [ ]
+    , button [ onClick ButtonPressed ] [ text "Add" ]
+    , listView txtOpsModel
+    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate, onBlur AreaBlurred ] [ text ( joinTxtList txtOpsModel ) ]
     ]
 
 -- SUBSCRIPTIONS
-txtSubscriptions : TxtOpsModel -> Sub MsgTxt
+--txtSubscriptions : TxtOpsModel -> Sub MsgTxt
+txtSubscriptions : TxtList -> Sub MsgTxt
 txtSubscriptions model = Sub.none
 
 -- INIT
-txtInit : ( TxtOpsModel, Cmd MsgTxt )
-txtInit = ( "abc", Cmd.none )
+--txtInit : ( TxtOpsModel, Cmd MsgTxt )
+--txtInit = ( "abc", Cmd.none )
+txtInit : ( TxtList, Cmd MsgTxt )
+txtInit = ( ["Hello", "World"], Cmd.none )
 
 
 -------------------------------------------------------
 -- Page
 
-main : Program Never TxtOpsModel MsgTxt
+--main : Program Never TxtOpsModel MsgTxt
+main : Program Never TxtList MsgTxt
 main =
     Html.program
         {
