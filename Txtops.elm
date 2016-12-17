@@ -4,94 +4,108 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import String exposing (..)
+import Json.Decode as Json
 
 -------------------------------------------------------
--- TxtList
+-- StringList
 
 -- MODEL
-type alias TxtList = List String
+type alias StringList = List String
 
 
 -- FUNCTIONS
-splitStrings : String -> TxtList
+splitStrings : String -> StringList
 splitStrings str = split "\n\n" str
 
-joinTxtList : TxtList -> String
-joinTxtList list = join "\n\n" list
+joinStringList : StringList -> String
+joinStringList list = join "\n\n" list
 
 liText l = li [] [text l]
 
-renderList : TxtList -> Html MsgTxt
+renderList : StringList -> Html Msg
 renderList list =
     list
     |> List.map liText
     |> ul []
 
+
 -- VIEW
-listView : TxtList -> Html MsgTxt
+listView : StringList -> Html Msg
 listView listModel = renderList listModel
 
 
 -------------------------------------------------------
--- TxtBoxModel
+-- Model
 
 -- MODEL
-type alias TxtOpsModel =
-  { tempField : String
-  , tempArea : String
-  , txtList : TxtList
-  }
+type alias Model =
+    { tempField : String
+    , tempArea : String
+    , strList : StringList
+    , strAreaList : StringList
+    }
 
 -- MESSAGES
-type MsgTxt
+type Msg
     = AreaUpdate String
     | FieldUpdate String
     | AreaBlurred
     | ButtonPressed
 
 -- UPDATE
-txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
-txtUpdate msg model = case msg of
-  FieldUpdate txt ->
-    ( { model | tempField = txt }, Cmd.none )
-  ButtonPressed ->
-    ( { model | txtList = model.txtList ++ [model.tempField] }, Cmd.none )
-  AreaUpdate txt ->
-    ( { model | tempArea = txt }, Cmd.none )
-  AreaBlurred ->
-    ( { model | txtList = splitStrings model.tempArea }, Cmd.none )
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model = case msg of
+    FieldUpdate str ->
+        ( { model | tempField = str }, Cmd.none )
+    ButtonPressed ->
+        ( { model
+          | strList = model.strList ++ [model.tempField]
+          , strAreaList = model.strList ++ [model.tempField]
+          },
+          Cmd.none
+        )
+    AreaUpdate str ->
+        ( { model
+          | tempArea = str
+          , strAreaList = splitStrings str
+          },
+          Cmd.none
+        )
+    AreaBlurred ->
+        ( { model | strList = splitStrings model.tempArea }, Cmd.none )
 
 -- VIEW
-txtOpsView : TxtOpsModel -> Html MsgTxt
-txtOpsView txtOpsModel = div []
-    [
-      input [ cols 40, placeholder "Feed me txt", onInput FieldUpdate ] [ ]
+view : Model -> Html Msg
+view strOpsModel = div []
+    [ input [ cols 40, onInput FieldUpdate ] [ ]
     , button [ onClick ButtonPressed ] [ text "Add" ]
-    , listView txtOpsModel.txtList
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate, onBlur AreaBlurred ] [ text ( joinTxtList txtOpsModel.txtList ) ]
+    , listView strOpsModel.strList
+    , textarea
+        [ rows 10, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ) ]
+        [ ]
     ]
 
+onChange f = on "change" (Json.map f Json.string)
+
 -- SUBSCRIPTIONS
-txtSubscriptions : TxtOpsModel -> Sub MsgTxt
-txtSubscriptions model = Sub.none
+subscriptions : Model -> Sub Msg
+subscriptions model = Sub.none
 
 -- INIT
-txtInit : ( TxtOpsModel, Cmd MsgTxt )
-txtInit = (
-  ( { tempField = "", tempArea = "", txtList = ["Hello", "World"] } )
-  , Cmd.none
-  )
+init : ( Model, Cmd Msg )
+init =
+    ( { tempField = "", tempArea = "Hello\n\nWorld", strList = ["Hello", "World"], strAreaList = ["Hello", "World"] }
+    , Cmd.none
+    )
 
 
 -------------------------------------------------------
 -- Page
 
-main : Program Never TxtOpsModel MsgTxt
-main =
-    Html.program
-        {
-          init = txtInit
-        , view = txtOpsView
-        , update = txtUpdate
-        , subscriptions = txtSubscriptions
-        }
+main : Program Never Model Msg
+main = Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
