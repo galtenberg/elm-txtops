@@ -11,11 +11,6 @@ import String exposing (..)
 -- MODEL
 type alias TxtList = List String
 
-type alias TxtModel =
-  { tempField : String
-  , tempArea : String
-  , txtList : TxtList
-  }
 
 -- FUNCTIONS
 splitStrings : String -> TxtList
@@ -41,53 +36,57 @@ listView listModel = renderList listModel
 -- TxtBoxModel
 
 -- MODEL
---type alias TxtOpsModel = String
+type alias TxtOpsModel =
+  { tempField : String
+  , tempArea : String
+  , txtList : TxtList
+  }
 
 -- MESSAGES
 type MsgTxt
     = AreaUpdate String
+    | FieldUpdate String
     | AreaBlurred
     | ButtonPressed
 
 -- UPDATE
---txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
-txtUpdate : MsgTxt -> TxtList -> ( TxtList, Cmd MsgTxt )
+txtUpdate : MsgTxt -> TxtOpsModel -> ( TxtOpsModel, Cmd MsgTxt )
 txtUpdate msg model = case msg of
-  AreaUpdate txt ->
-    ( model ++ [txt], Cmd.none )
-  AreaBlurred ->
-    ( model, Cmd.none )
+  FieldUpdate txt ->
+    ( { model | tempField = txt }, Cmd.none )
   ButtonPressed ->
-    ( [""], Cmd.none )
+    ( { model | txtList = model.txtList ++ [model.tempField] }, Cmd.none )
+  AreaUpdate txt ->
+    ( { model | tempArea = txt }, Cmd.none )
+  AreaBlurred ->
+    ( { model | txtList = splitStrings model.tempArea }, Cmd.none )
 
 -- VIEW
---txtOpsView : TxtOpsModel -> Html MsgTxt
-txtOpsView : TxtList -> Html MsgTxt
+txtOpsView : TxtOpsModel -> Html MsgTxt
 txtOpsView txtOpsModel = div []
     [
-      input [ cols 40, placeholder "Feed me txt" ] [ ]
+      input [ cols 40, placeholder "Feed me txt", onInput FieldUpdate ] [ ]
     , button [ onClick ButtonPressed ] [ text "Add" ]
-    , listView txtOpsModel
-    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate, onBlur AreaBlurred ] [ text ( joinTxtList txtOpsModel ) ]
+    , listView txtOpsModel.txtList
+    , textarea [cols 40, rows 10, placeholder "Feed me txtops", onInput AreaUpdate, onBlur AreaBlurred ] [ text ( joinTxtList txtOpsModel.txtList ) ]
     ]
 
 -- SUBSCRIPTIONS
---txtSubscriptions : TxtOpsModel -> Sub MsgTxt
-txtSubscriptions : TxtList -> Sub MsgTxt
+txtSubscriptions : TxtOpsModel -> Sub MsgTxt
 txtSubscriptions model = Sub.none
 
 -- INIT
---txtInit : ( TxtOpsModel, Cmd MsgTxt )
---txtInit = ( "abc", Cmd.none )
-txtInit : ( TxtList, Cmd MsgTxt )
-txtInit = ( ["Hello", "World"], Cmd.none )
+txtInit : ( TxtOpsModel, Cmd MsgTxt )
+txtInit = (
+  ( { tempField = "", tempArea = "", txtList = ["Hello", "World"] } )
+  , Cmd.none
+  )
 
 
 -------------------------------------------------------
 -- Page
 
---main : Program Never TxtOpsModel MsgTxt
-main : Program Never TxtList MsgTxt
+main : Program Never TxtOpsModel MsgTxt
 main =
     Html.program
         {
