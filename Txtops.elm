@@ -54,36 +54,39 @@ type Msg
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model = case msg of
-    FieldUpdate str ->
-        ( { model | tempField = str }, Cmd.none )
-    ButtonPressed ->
-        ( { model
-          | strList = model.strList ++ [model.tempField]
-          , strAreaList = model.strList ++ [model.tempField]
-          },
-          Cmd.none
-        )
-    AreaUpdate str ->
-        ( { model
-          | tempArea = str
-          , strAreaList = splitStrings str
-          },
-          Cmd.none
-        )
-    AreaBlurred ->
-        ( { model | strList = splitStrings model.tempArea }, Cmd.none )
+update msg model = ((case msg of
+        FieldUpdate str ->
+            { model | tempField = str }
+        ButtonPressed ->
+            { model
+            | strList = model.strList ++ [model.tempField]
+            , strAreaList = model.strList ++ [model.tempField]
+            }
+        AreaUpdate str ->
+            { model
+            | tempArea = str
+            , strAreaList = splitStrings str
+            }
+        AreaBlurred ->
+            { model | strList = splitStrings model.tempArea }
+    ), Cmd.none)
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel = div []
-    [ input [ cols 40, onInput FieldUpdate ] [ ]
-    , button [ onClick ButtonPressed ] [ text "Add" ]
-    , listView strOpsModel.strList
-    , textarea
-        [ rows 10, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ) ]
-        [ ]
-    ]
+view strOpsModel = table [] [ tr [style[("vertical-align", "top")] ]
+    [ td []
+      [ textarea [ cols 60, rows 4, onInput FieldUpdate ] [ ]
+      , br [] []
+      , button [ style[("width", "100%")], onClick ButtonPressed ] [ text "🔽" ]
+      , listView strOpsModel.strList
+      ],
+      td []
+      [
+        textarea
+          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ) ]
+          [ ]
+      ]
+    ]]
 
 onChange f = on "change" (Json.map f Json.string)
 
