@@ -6,6 +6,18 @@ import Html.Events exposing (..)
 import String exposing (..)
 import Json.Decode as Json
 
+
+lightBorderStyle = [("border","1px lightgrey solid")]
+fullWidthStyle = [("width", "100%")]
+topAlignStyle = [("vertical-align", "top")]
+magicBoxButtonHacksStyle = [("margin-top", "-8px")]
+magicTextBoxStyle =
+  [ ("white-space","pre")
+  , ("width","92%")
+  , ("padding","15px")
+  , ("margin-top","30px")
+  ] ++ lightBorderStyle
+
 -------------------------------------------------------
 -- StringList
 
@@ -20,13 +32,13 @@ splitStrings str = split "\n\n" str
 joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
 
-liText l = li [] [text l]
+liText l = div [ style magicTextBoxStyle ] [ text l ]
 
 renderList : StringList -> Html Msg
 renderList list =
     list
     |> List.map liText
-    |> ul []
+    |> div []
 
 
 -- VIEW
@@ -59,8 +71,8 @@ update msg model = ((case msg of
             { model | tempField = str }
         ButtonPressed ->
             { model
-            | strList = model.strList ++ [model.tempField]
-            , strAreaList = model.strList ++ [model.tempField]
+            | strList = model.strList ++ [ model.tempField ]
+            , strAreaList = model.strList ++ [ model.tempField ]
             }
         AreaUpdate str ->
             { model
@@ -73,31 +85,30 @@ update msg model = ((case msg of
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel = table [] [ tr [style[("vertical-align", "top")] ]
+view strOpsModel = table [] [ tr [ style topAlignStyle ]
     [ td []
-      [ textarea [ cols 60, rows 4, onInput FieldUpdate ] [ ]
-      , br [] []
-      , button [ style[("width", "100%")], onClick ButtonPressed ] [ text "🔽" ]
+      [ div [] [ textarea [ cols 60, rows 4, onInput FieldUpdate, style lightBorderStyle ] [ ] ]
+      , div [ style magicBoxButtonHacksStyle ] [ button [ style fullWidthStyle , onClick ButtonPressed ] [ text "🔽" ] ]
       , listView strOpsModel.strList
       ],
       td []
       [
         textarea
-          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ) ]
+          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style lightBorderStyle ]
           [ ]
       ]
     ]]
-
-onChange f = on "change" (Json.map f Json.string)
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 -- INIT
+initText = "Hello\nhi\n\nWorld"
+
 init : ( Model, Cmd Msg )
 init =
-    ( { tempField = "", tempArea = "Hello\n\nWorld", strList = ["Hello", "World"], strAreaList = ["Hello", "World"] }
+    ( { tempField = "", tempArea = initText, strList = splitStrings initText, strAreaList = splitStrings initText }
     , Cmd.none
     )
 
