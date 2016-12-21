@@ -6,17 +6,9 @@ import Html.Events exposing (..)
 import String exposing (..)
 import Json.Decode as Json
 
+import Txt exposing (..)
+import TxtStyles exposing (..)
 
-lightBorderStyle = [("border","1px lightgrey solid")]
-fullWidthStyle = [("width", "100%")]
-topAlignStyle = [("vertical-align", "top")]
-magicBoxButtonHacksStyle = [("margin-top", "-8px")]
-magicTextBoxStyle =
-  [ ("white-space","pre")
-  , ("width","92%")
-  , ("padding","15px")
-  , ("margin-top","30px")
-  ] ++ lightBorderStyle
 
 -------------------------------------------------------
 -- StringList
@@ -104,8 +96,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 -- INIT
-initText = "Hello\nhi\n\nWorld"
-
 init : ( Model, Cmd Msg )
 init =
     ( { tempField = "", tempArea = initText, strList = splitStrings initText, strAreaList = splitStrings initText }
