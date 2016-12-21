@@ -80,7 +80,7 @@ view : Model -> Html Msg
 view strOpsModel = table [] [ tr [ style topAlignStyle ]
     [ td []
       [ div [] [ textarea [ cols 60, rows 4, onInput FieldUpdate, style lightBorderStyle ] [ ] ]
-      , div [ style magicBoxButtonHacksStyle ] [ button [ style fullWidthStyle , onClick ButtonPressed ] [ text "🔽" ] ]
+      , div [ style magicBoxButtonHacksStyle ] [ button [ style fullWidthStyle, onClick ButtonPressed ] [ text "🔽" ] ]
       , listView strOpsModel.strList
       ],
       td []
