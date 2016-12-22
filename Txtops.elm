@@ -24,7 +24,7 @@ splitStrings str = split "\n\n" str
 joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
 
-liText l = div [ style magicTextBoxStyle ] [ text l ]
+liText l = div [ style magicButtonStyle ] [ text l ]
 
 renderList : StringList -> Html Msg
 renderList list =
@@ -65,6 +65,7 @@ update msg model = ((case msg of
             { model
             | strList = model.strList ++ [ model.tempField ]
             , strAreaList = model.strList ++ [ model.tempField ]
+            , tempField = ""
             }
         AreaUpdate str ->
             { model
@@ -77,16 +78,18 @@ update msg model = ((case msg of
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel = table [] [ tr [ style topAlignStyle ]
-    [ td []
-      [ div [] [ textarea [ cols 60, rows 4, onInput FieldUpdate, style lightBorderStyle ] [ ] ]
-      , div [ style magicBoxButtonHacksStyle ] [ button [ style fullWidthStyle, onClick ButtonPressed ] [ text "🔽" ] ]
+view strOpsModel = table [ ] [ tr [ style topAlignStyle ]
+    [ td [ style tableCellStyle ]
+      [ div [ style magicBox ]
+        [ div [] [ textarea [ cols 60, rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.tempField ] [ ] ]
+        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ]
+        ]
       , listView strOpsModel.strList
       ],
-      td []
+      td [ style tableCellStyle ]
       [
         textarea
-          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style lightBorderStyle ]
+          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style readTextAreaStyle ]
           [ ]
       ]
     ]]
