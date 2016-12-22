@@ -42,4 +42,5 @@ magicButtonStyle =
 
 readTextAreaStyle =
   [ "background-color" => "rgb(236,236,236)"
+  , "padding" => "10px"
   ] ++ lightBorderStyle ++ defaultFont

@@ -15,6 +15,9 @@ Show 3 random notes
 Show me what needs organizing
 
 Let me use note as a prompt
+
+Zoomability of workflowy, mindscope
+With breadcrumbs
 """ |> dropLeft 1 |> dropRight 1
 
 -- > String.uncons "ab" |> Maybe.Extra.maybeToList |> List.unzip |> Tuple.second |> List.head

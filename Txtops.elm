@@ -58,23 +58,23 @@ type Msg
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model = ((case msg of
-        FieldUpdate str ->
-            { model | tempField = str }
-        ButtonPressed ->
-            { model
-            | strList = model.strList ++ [ model.tempField ]
-            , strAreaList = model.strList ++ [ model.tempField ]
-            , tempField = ""
-            }
-        AreaUpdate str ->
-            { model
-            | tempArea = str
-            , strAreaList = splitStrings str
-            }
-        AreaBlurred ->
-            { model | strList = splitStrings model.tempArea }
-    ), Cmd.none)
+update msg model = case msg of
+    FieldUpdate str ->
+        { model | tempField = str } ! []
+    ButtonPressed ->
+        { model
+        | strList = model.strList ++ [ model.tempField ]
+        , strAreaList = model.strList ++ [ model.tempField ]
+        , tempField = ""
+        } ! []
+    AreaUpdate str ->
+        { model
+        | tempArea = str
+        , strAreaList = splitStrings str
+        } ! []
+    AreaBlurred ->
+        { model | strList = splitStrings model.tempArea } ! []
+
 
 -- VIEW
 view : Model -> Html Msg
