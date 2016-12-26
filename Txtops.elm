@@ -25,6 +25,7 @@ joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
 
 liText l = div [ style magicButtonStyle ] [ text l ]
+liText2 l = div [ style magicButtonStyle2 ] [ text l ]
 
 renderList : StringList -> Html Msg
 renderList list =
@@ -78,21 +79,33 @@ update msg model = case msg of
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel = table [ ] [ tr [ style topAlignStyle ]
-    [ td [ style tableCellStyle ]
-      [ div [ style magicBox ]
-        [ div [] [ textarea [ cols 60, rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.tempField ] [ ] ]
-        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ]
+view strOpsModel = table [ style tableStyle ] [ tr [ style topAlignStyle ]
+    [ viewCraftColumn strOpsModel
+    , viewNoteColumn strOpsModel
+    , viewTxtColumn strOpsModel
+    ] ]
+
+viewCraftColumn strOpsModel =
+    td [ style tableCellStyle20 ]
+    [ div [] (List.map liText2 [ "NoteCraft", "When: needing Energy", "Rating: 3", "Any: 4" ]) ]
+
+viewNoteColumn strOpsModel =
+    td [ style tableCellStyle40 ]
+    [ div [ style magicBox ]
+        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.tempField ] [ ] ]
+        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "🔽" ] ]
         ]
-      , listView strOpsModel.strList
-      ],
-      td [ style tableCellStyle ]
-      [
+    , listView strOpsModel.strList
+    ]
+
+viewTxtColumn strOpsModel =
+    td [ style tableCellStyle30 ]
+    [
         textarea
-          [ cols 60, rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style readTextAreaStyle ]
-          [ ]
-      ]
-    ]]
+        [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style readTextAreaStyle ]
+        [ ]
+    ]
+
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg

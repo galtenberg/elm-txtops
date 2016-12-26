@@ -8,6 +8,7 @@ lightBorderStyle = [ "border" => "1px lightgrey solid" ]
 fullWidthStyle = [ "width" => "100%" ]
 topAlignStyle = [ "vertical-align" => "top" ]
 rounded = [ "border-radius" => radius ]
+cursorPointer = [ "cursor" => "pointer" ]
 
 defaultFont =
   [ "font-family" => "-apple-system, BlinkMacSystemFont, sans-serif"
@@ -16,8 +17,19 @@ defaultFont =
 
 tableStyle =
   [ "padding" => "15px"
+  , "table-layout" => "fixed"
+  , "width" => "100%"
+  , "background-color" => "rgb(252, 255, 255)"
   ] ++ defaultFont
-tableCellStyle = [ "padding" => "30px" ]
+tableCellStyle =
+  [ "padding" => "30px"
+  ]
+tableCellStyle20 =
+  [ "width" => "25%" ] ++ tableCellStyle
+tableCellStyle30 =
+  [ "width" => "35%" ] ++ tableCellStyle
+tableCellStyle40 =
+  [ "width" => "40%" ] ++ tableCellStyle
 
 magicBox = rounded
 magicBoxTextStyle =
@@ -25,22 +37,38 @@ magicBoxTextStyle =
   , "border-top-right-radius" => radius
   , "padding" => "10px"
   , "margin" => "0"
+  , "width" => "95%"
   ] ++ lightBorderStyle ++ defaultFont
-magicBoxButtonWrapperStyle = [ "margin-top" => "-8px" ]
+magicBoxButtonWrapperStyle = [ "margin-top" => "-6px" ]
 magicBoxButtonStyle =
   [ "border-bottom-left-radius" => radius
   , "border-bottom-right-radius" => radius
   , "background-color" => "white"
   , "font-size" => "18px"
-  ] ++ fullWidthStyle ++ lightBorderStyle
+  , "margin-bottom" => "30px"
+  , "width" => "99%"
+  , "height" => "30px"
+  , "padding-top" => "4px"
+  ] ++ lightBorderStyle ++ cursorPointer
+
 magicButtonStyle =
   [ "white-space" => "pre"
-  , "width" => "95%"
+  , "width" => "93%"
   , "padding" => "15px"
-  , "margin-top" => "30px"
-  ] ++ lightBorderStyle ++ rounded ++ defaultFont
+  , "margin-bottom" => "30px"
+  , "background-color" => "white"
+  ] ++ lightBorderStyle ++ rounded ++ defaultFont ++ cursorPointer
+magicButtonStyle2 =
+  magicButtonStyle ++
+  [ "background-color" => "rgb(206, 227, 229)"
+  , "font-variant" => "small-caps"
+  , "font-weight" => "bold"
+  , "border" => "0"
+  --, "text-align" => "center"
+  ]
 
 readTextAreaStyle =
-  [ "background-color" => "rgb(236,236,236)"
+  [ "background-color" => "rgb(224, 230, 235)"
   , "padding" => "10px"
+  , "width" => "100%"
   ] ++ lightBorderStyle ++ defaultFont

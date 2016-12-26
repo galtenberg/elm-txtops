@@ -4,6 +4,12 @@ import String exposing (..)
 import Tuple exposing (..)
 
 initText = """
+Your control panel
+
+- Control: High
+- Control: Top
+- Control: Middle
+
 Fun, full day environment
 
 Remember, the goal isn't software
