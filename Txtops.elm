@@ -28,13 +28,16 @@ joinStringList list = join "\n\n" list
 regexCrafts : String -> List Regex.Match
 regexCrafts str = find All (regex ".*\\s+(\\w+:\\s*\\w+)") str
 
+extractSubmatches : Regex.Match -> List String
+extractSubmatches match =
+    match.submatches
+    |> List.map (Maybe.withDefault "")
+
 matchCrafts : String -> StringList
 matchCrafts str =
-    List.foldr (++) []
-    ( List.map
-      (\m -> (List.map (Maybe.withDefault "") m.submatches))
-      (regexCrafts str)
-    )
+    regexCrafts str
+    |> List.map extractSubmatches
+    |> List.foldr (++) []
 
 liText l = div [ style magicButtonStyle ] [ text l ]
 liText2 l = div [ style magicButtonStyle2 ] [ text l ]
@@ -105,7 +108,7 @@ viewNoteColumn strOpsModel =
     td [ style tableCellStyle40 ]
     [ div [ style magicBox ]
         [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.tempField ] [ ] ]
-        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "🔽" ] ]
+        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "🔽" ] ] --▼
         ]
     , listView strOpsModel.strList
     ]
