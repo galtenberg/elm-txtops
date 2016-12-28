@@ -24,9 +24,9 @@ tableStyle =
 tableCellStyle =
   [ "padding" => "30px"
   ]
-tableCellStyle20 =
+tableCellStyle25 =
   [ "width" => "25%" ] ++ tableCellStyle
-tableCellStyle30 =
+tableCellStyle35 =
   [ "width" => "35%" ] ++ tableCellStyle
 tableCellStyle40 =
   [ "width" => "40%" ] ++ tableCellStyle
@@ -68,7 +68,7 @@ magicButtonStyle2 =
   ]
 
 readTextAreaStyle =
-  [ "background-color" => "rgb(224, 230, 235)"
+  [ "background-color" => "rgb(233, 237, 237)"
   , "padding" => "10px"
   , "width" => "100%"
   ] ++ lightBorderStyle ++ defaultFont

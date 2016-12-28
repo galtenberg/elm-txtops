@@ -5,7 +5,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import String exposing (..)
 import Json.Decode as Json
-
+import Regex exposing (..)
+import Maybe exposing (Maybe)
 import Txt exposing (..)
 import TxtStyles exposing (..)
 
@@ -19,10 +20,21 @@ type alias StringList = List String
 
 -- FUNCTIONS
 splitStrings : String -> StringList
-splitStrings str = split "\n\n" str
+splitStrings str = String.split "\n\n" str
 
 joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
+
+regexCrafts : String -> List Regex.Match
+regexCrafts str = find All (regex ".*\\s+(\\w+:\\s*\\w+)") str
+
+matchCrafts : String -> StringList
+matchCrafts str =
+    List.foldr (++) []
+    ( List.map
+      (\m -> (List.map (Maybe.withDefault "") m.submatches))
+      (regexCrafts str)
+    )
 
 liText l = div [ style magicButtonStyle ] [ text l ]
 liText2 l = div [ style magicButtonStyle2 ] [ text l ]
@@ -86,8 +98,8 @@ view strOpsModel = table [ style tableStyle ] [ tr [ style topAlignStyle ]
     ] ]
 
 viewCraftColumn strOpsModel =
-    td [ style tableCellStyle20 ]
-    [ div [] (List.map liText2 [ "NoteCraft", "When: needing Energy", "Rating: 3", "Any: 4" ]) ]
+    td [ style tableCellStyle25 ]
+    [ div [] (List.map liText2 ([ "NoteCraft" ] ++ (matchCrafts initText)) ) ]
 
 viewNoteColumn strOpsModel =
     td [ style tableCellStyle40 ]
@@ -99,7 +111,7 @@ viewNoteColumn strOpsModel =
     ]
 
 viewTxtColumn strOpsModel =
-    td [ style tableCellStyle30 ]
+    td [ style tableCellStyle35 ]
     [
         textarea
         [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style readTextAreaStyle ]
