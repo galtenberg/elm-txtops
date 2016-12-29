@@ -7,6 +7,7 @@ radius = "15px"
 lightBorderStyle = [ "border" => "1px lightgrey solid" ]
 fullWidthStyle = [ "width" => "100%" ]
 topAlignStyle = [ "vertical-align" => "top" ]
+centerAlignStyle = [ "text-align" => "center" ]
 rounded = [ "border-radius" => radius ]
 cursorPointer = [ "cursor" => "pointer" ]
 
@@ -64,7 +65,6 @@ magicButtonStyle2 =
   , "font-variant" => "small-caps"
   , "font-weight" => "bold"
   , "border" => "0"
-  --, "text-align" => "center"
   ]
 
 readTextAreaStyle =

@@ -39,14 +39,13 @@ matchCrafts str =
     |> List.map extractSubmatches
     |> List.foldr (++) []
 
-liText l = div [ style magicButtonStyle ] [ text l ]
+liText1 l = div [ style magicButtonStyle ] [ text l ]
 liText2 l = div [ style magicButtonStyle2 ] [ text l ]
 
 renderList : StringList -> Html Msg
-renderList list =
-    list
-    |> List.map liText
-    |> div []
+renderList list = list |> List.map liText1 |> div []
+renderList2 : StringList -> Html Msg
+renderList2 list = list |> List.map liText2 |> div []
 
 
 -- VIEW
@@ -63,6 +62,7 @@ type alias Model =
     , tempArea : String
     , strList : StringList
     , strAreaList : StringList
+    , strCraftsList : StringList
     }
 
 -- MESSAGES
@@ -81,6 +81,7 @@ update msg model = case msg of
         { model
         | strList = model.strList ++ [ model.tempField ]
         , strAreaList = model.strList ++ [ model.tempField ]
+        , strCraftsList = matchCrafts model.tempField
         , tempField = ""
         } ! []
     AreaUpdate str ->
@@ -89,7 +90,10 @@ update msg model = case msg of
         , strAreaList = splitStrings str
         } ! []
     AreaBlurred ->
-        { model | strList = splitStrings model.tempArea } ! []
+        { model
+        | strList = splitStrings model.tempArea
+        , strCraftsList = matchCrafts model.tempArea
+        } ! []
 
 
 -- VIEW
@@ -102,7 +106,7 @@ view strOpsModel = table [ style tableStyle ] [ tr [ style topAlignStyle ]
 
 viewCraftColumn strOpsModel =
     td [ style tableCellStyle25 ]
-    [ div [] (List.map liText2 ([ "NoteCraft" ] ++ (matchCrafts initText)) ) ]
+    [ renderList2 ( "NoteCraft" :: strOpsModel.strCraftsList ) ]
 
 viewNoteColumn strOpsModel =
     td [ style tableCellStyle40 ]
@@ -129,9 +133,12 @@ subscriptions model = Sub.none
 -- INIT
 init : ( Model, Cmd Msg )
 init =
-    ( { tempField = "", tempArea = initText, strList = splitStrings initText, strAreaList = splitStrings initText }
-    , Cmd.none
-    )
+    { tempField = ""
+    , tempArea = initText
+    , strList = splitStrings initText
+    , strAreaList = splitStrings initText
+    , strCraftsList = matchCrafts initText
+    } ! []
 
 
 -------------------------------------------------------
