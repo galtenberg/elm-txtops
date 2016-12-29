@@ -17,6 +17,9 @@ import TxtStyles exposing (..)
 -- MODEL
 type alias StringList = List String
 
+-- VIEW
+listView : StringList -> Html Msg
+listView listModel = renderList listModel
 
 -- FUNCTIONS
 splitStrings : String -> StringList
@@ -48,22 +51,20 @@ renderList2 : StringList -> Html Msg
 renderList2 list = list |> List.map liText2 |> div []
 
 
--- VIEW
-listView : StringList -> Html Msg
-listView listModel = renderList listModel
-
-
 -------------------------------------------------------
 -- Model
 
 -- MODEL
 type alias Model =
-    { tempField : String
-    , tempArea : String
+    { strCraftsList : StringList
+    , strMagicField : String
     , strList : StringList
-    , strAreaList : StringList
-    , strCraftsList : StringList
+    , strArea : String
     }
+
+combinedArea : Model -> String
+combinedArea model = model.strArea ++ "\n\n" ++ model.strMagicField
+
 
 -- MESSAGES
 type Msg
@@ -72,27 +73,27 @@ type Msg
     | AreaBlurred
     | ButtonPressed
 
+
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
     FieldUpdate str ->
-        { model | tempField = str } ! []
+        { model | strMagicField = str } ! []
     ButtonPressed ->
         { model
-        | strList = model.strList ++ [ model.tempField ]
-        , strAreaList = model.strList ++ [ model.tempField ]
-        , strCraftsList = matchCrafts model.tempField
-        , tempField = ""
+        | strCraftsList = matchCrafts (combinedArea model)
+        , strMagicField = ""
+        , strList = model.strList ++ [ model.strMagicField ]
+        , strArea = combinedArea model
         } ! []
     AreaUpdate str ->
         { model
-        | tempArea = str
-        , strAreaList = splitStrings str
+        | strArea = str
         } ! []
     AreaBlurred ->
         { model
-        | strList = splitStrings model.tempArea
-        , strCraftsList = matchCrafts model.tempArea
+        | strCraftsList = matchCrafts model.strArea
+        , strList = splitStrings model.strArea
         } ! []
 
 
@@ -111,7 +112,7 @@ viewCraftColumn strOpsModel =
 viewNoteColumn strOpsModel =
     td [ style tableCellStyle40 ]
     [ div [ style magicBox ]
-        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.tempField ] [ ] ]
+        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.strMagicField ] [ ] ]
         , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "🔽" ] ] --▼
         ]
     , listView strOpsModel.strList
@@ -121,23 +122,18 @@ viewTxtColumn strOpsModel =
     td [ style tableCellStyle35 ]
     [
         textarea
-        [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value ( joinStringList strOpsModel.strAreaList ), style readTextAreaStyle ]
+        [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.strArea, style readTextAreaStyle ]
         [ ]
     ]
 
 
--- SUBSCRIPTIONS
-subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
-
 -- INIT
 init : ( Model, Cmd Msg )
 init =
-    { tempField = ""
-    , tempArea = initText
+    { strCraftsList = matchCrafts initText
+    , strMagicField = ""
     , strList = splitStrings initText
-    , strAreaList = splitStrings initText
-    , strCraftsList = matchCrafts initText
+    , strArea = initText
     } ! []
 
 
@@ -149,5 +145,5 @@ main = Html.program
     { init = init
     , view = view
     , update = update
-    , subscriptions = subscriptions
+    , subscriptions = \_ -> Sub.none
     }
