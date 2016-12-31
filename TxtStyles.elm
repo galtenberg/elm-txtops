@@ -38,14 +38,15 @@ magicBoxTextStyle =
   , "border-top-right-radius" => radius
   , "padding" => "10px"
   , "margin" => "0"
-  , "width" => "95%"
+  , "width" => "100%"
+  , "box-sizing" => "border-box"
   ] ++ lightBorderStyle ++ defaultFont
 magicBoxButtonWrapperStyle = [ "margin-top" => "-6px" ]
 magicBoxButtonStyle =
   [ "border-bottom-left-radius" => radius
   , "border-bottom-right-radius" => radius
   , "background-color" => "white"
-  , "color" => "rgb(174, 174, 174)"
+  , "color" => "rgb(169, 186, 188)"
   , "font-size" => "18px"
   , "margin-bottom" => "30px"
   , "width" => "100%"
