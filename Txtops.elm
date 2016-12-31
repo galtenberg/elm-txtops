@@ -99,9 +99,11 @@ update msg model = case msg of
         | strArea = str
         } ! []
     AreaBlurred ->
-        { model
-        | strCraftsList = matchCrafts model.strArea
-        , strList = splitStrings model.strArea
+        let trimmedArea = String.trim model.strArea
+        in { model
+        | strCraftsList = matchCrafts trimmedArea
+        , strList = splitStrings trimmedArea
+        , strArea = trimmedArea
         } ! []
 
 
