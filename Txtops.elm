@@ -22,13 +22,25 @@ type alias StringList = List String
 listView : StringList -> Html Msg
 listView listModel = renderList listModel
 
--- FUNCTIONS
+liText1 l = div [ style magicButtonStyle ] [ text l ]
+liText2 l = div [ style magicButtonStyle2 ] [ text l ]
+
+renderList : StringList -> Html Msg
+renderList list = list |> List.map liText1 |> div []
+renderList2 : StringList -> Html Msg
+renderList2 list = list |> List.map liText2 |> div []
+
+-- FUNCTIONS UTIL
 splitStrings : String -> StringList
 splitStrings str = String.split "\n\n" str
 
 joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
 
+uniqueList : List comparable -> List comparable
+uniqueList list = list |> Set.fromList |> Set.toList
+
+-- FUNCTIONS
 regexCrafts : String -> List Regex.Match
 regexCrafts str = find All (regex ".*\\s+(\\w+:\\s*\\w+)") str
 
@@ -42,16 +54,6 @@ matchCrafts str =
     regexCrafts str
     |> List.map extractSubmatches
     |> List.foldr (++) []
-
-liText1 l = div [ style magicButtonStyle ] [ text l ]
-liText2 l = div [ style magicButtonStyle2 ] [ text l ]
-
-renderList : StringList -> Html Msg
-renderList list = list |> List.map liText1 |> div []
-renderList2 : StringList -> Html Msg
-renderList2 list = list |> List.map liText2 |> div []
-
-uniqueList list = list |> Set.fromList |> Set.toList
 
 
 -------------------------------------------------------
