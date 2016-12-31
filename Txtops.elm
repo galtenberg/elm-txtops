@@ -68,19 +68,16 @@ type alias Model =
 
 -- MESSAGES
 type Msg
-    = AreaUpdate String
-    | FieldUpdate String
-    | AreaBlurred
+    = FieldUpdate String
     | ButtonPressed
+    | AreaUpdate String
+    | AreaBlurred
 
 
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
-    FieldUpdate str ->
-        { model
-        | strMagicField = str
-        } ! []
+    FieldUpdate str -> { model | strMagicField = str } ! []
     ButtonPressed ->
         let
             trimmedField = String.trim model.strMagicField
@@ -94,10 +91,7 @@ update msg model = case msg of
             , strList = combinedList
             , strArea = combinedArea
             } ! []
-    AreaUpdate str ->
-        { model
-        | strArea = str
-        } ! []
+    AreaUpdate str -> { model | strArea = str } ! []
     AreaBlurred ->
         let trimmedArea = String.trim model.strArea
         in { model
