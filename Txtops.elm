@@ -4,9 +4,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import String exposing (..)
-import Json.Decode as Json
-import Regex exposing (..)
 import Maybe exposing (Maybe)
+import Set exposing (..)
+import Regex exposing (..)
+import Json.Decode as Json
 import Txt exposing (..)
 import TxtStyles exposing (..)
 
@@ -50,6 +51,8 @@ renderList list = list |> List.map liText1 |> div []
 renderList2 : StringList -> Html Msg
 renderList2 list = list |> List.map liText2 |> div []
 
+uniqueList list = list |> Set.fromList |> Set.toList
+
 
 -------------------------------------------------------
 -- Model
@@ -61,9 +64,6 @@ type alias Model =
     , strList : StringList
     , strArea : String
     }
-
-combinedArea : Model -> String
-combinedArea model = model.strArea ++ "\n\n" ++ model.strMagicField
 
 
 -- MESSAGES
@@ -78,14 +78,22 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
     FieldUpdate str ->
-        { model | strMagicField = str } ! []
-    ButtonPressed ->
         { model
-        | strCraftsList = matchCrafts (combinedArea model)
-        , strMagicField = ""
-        , strList = model.strList ++ [ model.strMagicField ]
-        , strArea = combinedArea model
+        | strMagicField = str
         } ! []
+    ButtonPressed ->
+        let
+            trimmedField = String.trim model.strMagicField
+            emptyField = String.isEmpty trimmedField
+            combinedArea = if emptyField then model.strArea else model.strArea ++ "\n\n" ++ model.strMagicField
+            combinedList = if emptyField then model.strList else model.strList ++ [ model.strMagicField ]
+        in
+            { model
+            | strCraftsList = matchCrafts combinedArea
+            , strMagicField = ""
+            , strList = combinedList
+            , strArea = combinedArea
+            } ! []
     AreaUpdate str ->
         { model
         | strArea = str
@@ -107,13 +115,13 @@ view strOpsModel = table [ style tableStyle ] [ tr [ style topAlignStyle ]
 
 viewCraftColumn strOpsModel =
     td [ style tableCellStyle25 ]
-    [ renderList2 ( "NoteCraft" :: strOpsModel.strCraftsList ) ]
+    [ renderList2 ( "NoteCraft" :: ( uniqueList strOpsModel.strCraftsList ) ) ]
 
 viewNoteColumn strOpsModel =
     td [ style tableCellStyle40 ]
     [ div [ style magicBox ]
         [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.strMagicField ] [ ] ]
-        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "🔽" ] ] --▼
+        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ] --▼ 🔽
         ]
     , listView strOpsModel.strList
     ]

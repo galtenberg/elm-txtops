@@ -6,9 +6,9 @@ import Tuple exposing (..)
 initText = """
 Your control panel
 
-- Control: High
-- Control: Top
-- Control: Middle
+- Color: Blue
+- When: need Energy
+- Tag: Resonance
 
 Fun, full day environment
 

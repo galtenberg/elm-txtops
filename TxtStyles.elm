@@ -45,9 +45,10 @@ magicBoxButtonStyle =
   [ "border-bottom-left-radius" => radius
   , "border-bottom-right-radius" => radius
   , "background-color" => "white"
+  , "color" => "rgb(174, 174, 174)"
   , "font-size" => "18px"
   , "margin-bottom" => "30px"
-  , "width" => "99%"
+  , "width" => "100%"
   , "height" => "30px"
   , "padding-top" => "4px"
   ] ++ lightBorderStyle ++ cursorPointer
