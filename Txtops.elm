@@ -40,7 +40,7 @@ joinStringList list = join "\n\n" list
 uniqueList : List comparable -> List comparable
 uniqueList list = list |> Set.fromList |> Set.toList
 
--- FUNCTIONS
+-- FUNCTIONS CRAFTS
 regexCrafts : String -> List Regex.Match
 regexCrafts str = find All (regex ".*\\s+(\\w+:\\s*\\w+)") str
 
@@ -55,6 +55,23 @@ matchCrafts str =
     |> List.map extractSubmatches
     |> List.foldr (++) []
 
+-- FUNCTIONS ID
+regexIDs : String -> List Regex.Match
+regexIDs str = find All (regex "\\[#(\\d+)") str
+
+maxID : String -> Int
+maxID str =
+    regexIDs str
+    |> List.map extractSubmatches
+    |> List.foldr (++) []
+    |> List.map String.toInt
+    |> List.map (Result.withDefault 0)
+    |> List.maximum
+    |> Maybe.withDefault 1001
+
+newID : String -> String
+newID str =
+    (maxID str) + 1 |> toString
 
 -------------------------------------------------------
 -- Model
@@ -84,8 +101,9 @@ update msg model = case msg of
         let
             trimmedField = String.trim model.strMagicField
             emptyField = String.isEmpty trimmedField
-            combinedArea = if emptyField then model.strArea else model.strArea ++ "\n\n" ++ model.strMagicField
-            combinedList = if emptyField then model.strList else model.strList ++ [ model.strMagicField ]
+            fieldWithID = trimmedField ++ "\n[#" ++ (newID model.strArea) ++ "]"
+            combinedArea = if emptyField then model.strArea else model.strArea ++ "\n\n" ++ fieldWithID
+            combinedList = if emptyField then model.strList else model.strList ++ [ trimmedField ]
         in
             { model
             | strCraftsList = matchCrafts combinedArea

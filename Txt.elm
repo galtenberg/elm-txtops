@@ -17,6 +17,7 @@ It's txtops in a basic editor
 Even crafting
 
 Show 3 random notes
+[#1001]
 
 Show me what needs organizing
 
