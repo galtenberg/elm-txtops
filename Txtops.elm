@@ -123,11 +123,14 @@ update msg model = case msg of
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel = table [ style tableStyle ] [ tr [ style topAlignStyle ]
-    [ viewCraftColumn strOpsModel
-    , viewNoteColumn strOpsModel
-    , viewTxtColumn strOpsModel
-    ] ]
+view strOpsModel =
+    table [ style tableStyle ]
+    [ tr [ style topAlignStyle ]
+      [ viewCraftColumn strOpsModel
+      , viewNoteColumn strOpsModel
+      , viewTxtColumn strOpsModel
+      ]
+    ]
 
 viewCraftColumn strOpsModel =
     td [ style tableCellStyle25 ]
@@ -144,10 +147,9 @@ viewNoteColumn strOpsModel =
 
 viewTxtColumn strOpsModel =
     td [ style tableCellStyle35 ]
-    [
-        textarea
-        [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.strArea, style readTextAreaStyle ]
-        [ ]
+    [ textarea
+      [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.strArea, style readTextAreaStyle ]
+      [ ]
     ]
 
 

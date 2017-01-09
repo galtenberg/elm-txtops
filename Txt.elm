@@ -22,6 +22,7 @@ Show 3 random notes
 Show me what needs organizing
 
 Let me use note as a prompt
+[#1002]
 
 Zoomability of workflowy, mindscope
 With breadcrumbs
