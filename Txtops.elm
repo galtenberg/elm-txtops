@@ -12,16 +12,16 @@ import Txt exposing (..)
 import TxtStyles exposing (..)
 
 
-type alias Txt = String
-type alias Note = String
-type alias NoteList = List Note
-type alias NoteSet = Set Note
-type alias Craft = String
-type alias CraftList = List Craft
-type alias ID = Int
+extractSubmatches : Regex.Match -> List String
+extractSubmatches match =
+    match.submatches
+    |> List.map (Maybe.withDefault "")
+
 
 -------------------------------------------------------
--- NoteList
+-- NoteList, NoteSet
+type alias NoteList = List Note
+type alias NoteSet = Set Note
 
 -- VIEW
 listView : NoteList -> Html Msg
@@ -35,27 +35,14 @@ renderList list = list |> List.map liText1 |> div []
 renderList2 : NoteList -> Html Msg
 renderList2 list = list |> List.map liText2 |> div []
 
--- FUNCTIONS UTIL
-splitTxt : Txt -> NoteList
-splitTxt txt = String.split "\n\n" txt
-
-noteListToTxt : NoteList -> Txt
-noteListToTxt noteList = join "\n\n" noteList
-
-uniqueCraftList : NoteList -> NoteList
-uniqueCraftList list = list |> Set.fromList |> Set.toList
-
 
 -------------------------------------------------------
 -- Craft, CraftList
+type alias Craft = String
+type alias CraftList = List Craft
 
 regexCrafts : Txt -> List Regex.Match
 regexCrafts txt = find All (regex ".*\\s+(\\w+:\\s*\\w+)") txt
-
-extractSubmatches : Regex.Match -> List String
-extractSubmatches match =
-    match.submatches
-    |> List.map (Maybe.withDefault "")
 
 matchCrafts : Txt -> NoteList
 matchCrafts txt =
@@ -63,13 +50,24 @@ matchCrafts txt =
     |> List.map extractSubmatches
     |> List.foldr (++) []
 
+uniqueCraftList : NoteList -> NoteList
+uniqueCraftList list = list |> Set.fromList |> Set.toList
+
 
 -------------------------------------------------------
 -- Txt
+type alias Txt = String
+
+splitTxt : Txt -> NoteList
+splitTxt txt = String.split "\n\n" txt
+
+noteListToTxt : NoteList -> Txt
+noteListToTxt noteList = join "\n\n" noteList
 
 
 -------------------------------------------------------
 -- ID
+type alias ID = Int
 
 regexIDs : Txt -> List Regex.Match
 regexIDs txt = find All (regex "\\[#(\\d+)") txt
@@ -91,6 +89,7 @@ newID txt =
 
 -------------------------------------------------------
 -- Note
+type alias Note = String
 
 buildNote : String -> Note
 buildNote str = String.trim str
@@ -103,7 +102,7 @@ appendIDtoNote note id = note ++ "\n[#" ++ (toString id) ++ "]"
 
 
 -------------------------------------------------------
--- Model
+-- Program
 
 -- MODEL
 type alias Model =
