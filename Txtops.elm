@@ -21,34 +21,34 @@ type alias CraftList = List Craft
 type alias ID = Int
 
 -------------------------------------------------------
--- StringList
-
--- MODEL
-type alias StringList = List String
+-- NoteList
 
 -- VIEW
-listView : StringList -> Html Msg
-listView listModel = renderList listModel
+listView : NoteList -> Html Msg
+listView noteList = renderList noteList
 
 liText1 l = div [ style magicButtonStyle ] [ text l ]
 liText2 l = div [ style magicButtonStyle2 ] [ text l ]
 
-renderList : StringList -> Html Msg
+renderList : NoteList -> Html Msg
 renderList list = list |> List.map liText1 |> div []
-renderList2 : StringList -> Html Msg
+renderList2 : NoteList -> Html Msg
 renderList2 list = list |> List.map liText2 |> div []
 
 -- FUNCTIONS UTIL
 splitTxt : Txt -> NoteList
 splitTxt txt = String.split "\n\n" txt
 
-joinStringList : StringList -> String
-joinStringList list = join "\n\n" list
+noteListToTxt : NoteList -> Txt
+noteListToTxt noteList = join "\n\n" noteList
 
-uniqueList : List comparable -> List comparable
-uniqueList list = list |> Set.fromList |> Set.toList
+uniqueCraftList : NoteList -> NoteList
+uniqueCraftList list = list |> Set.fromList |> Set.toList
 
--- FUNCTIONS CRAFTS
+
+-------------------------------------------------------
+-- Craft, CraftList
+
 regexCrafts : Txt -> List Regex.Match
 regexCrafts txt = find All (regex ".*\\s+(\\w+:\\s*\\w+)") txt
 
@@ -57,13 +57,20 @@ extractSubmatches match =
     match.submatches
     |> List.map (Maybe.withDefault "")
 
-matchCrafts : String -> StringList
-matchCrafts str =
-    regexCrafts str
+matchCrafts : Txt -> NoteList
+matchCrafts txt =
+    regexCrafts txt
     |> List.map extractSubmatches
     |> List.foldr (++) []
 
--- FUNCTIONS ID
+
+-------------------------------------------------------
+-- Txt
+
+
+-------------------------------------------------------
+-- ID
+
 regexIDs : Txt -> List Regex.Match
 regexIDs txt = find All (regex "\\[#(\\d+)") txt
 
@@ -77,18 +84,32 @@ maxID txt =
     |> List.maximum
     |> Maybe.withDefault 1001
 
-newID : Txt -> String
+newID : Txt -> ID
 newID txt =
-    (maxID txt) + 1 |> toString
+    (maxID txt) + 1
+
+
+-------------------------------------------------------
+-- Note
+
+buildNote : String -> Note
+buildNote str = String.trim str
+
+isEmptyNote : Note -> Bool
+isEmptyNote note = String.isEmpty note
+
+appendIDtoNote : Note -> ID -> Note
+appendIDtoNote note id = note ++ "\n[#" ++ (toString id) ++ "]"
+
 
 -------------------------------------------------------
 -- Model
 
 -- MODEL
 type alias Model =
-    { strCraftsList : StringList
+    { craftList : CraftList
     , magicField : Note
-    , strList : StringList
+    , noteList : NoteList
     , txt : Txt
     }
 
@@ -107,24 +128,24 @@ update msg model = case msg of
     FieldUpdate str -> { model | magicField = str } ! []
     ButtonPressed ->
         let
-            trimmedField = String.trim model.magicField
-            emptyField = String.isEmpty trimmedField
-            fieldWithID = trimmedField ++ "\n[#" ++ (newID model.txt) ++ "]"
-            appendedTxt = if emptyField then model.txt else model.txt ++ "\n\n" ++ fieldWithID
-            combinedList = if emptyField then model.strList else model.strList ++ [ trimmedField ]
+            newNote = buildNote model.magicField
+            newNoteID = newID model.txt
+            noteWithID = appendIDtoNote newNote newNoteID
+            appendedTxt = if (isEmptyNote newNote) then model.txt else model.txt ++ "\n\n" ++ noteWithID
+            appendedNoteList = if (isEmptyNote newNote) then model.noteList else model.noteList ++ [ newNote ]
         in
             { model
-            | strCraftsList = matchCrafts appendedTxt
+            | craftList = matchCrafts appendedTxt
             , magicField = ""
-            , strList = combinedList
+            , noteList = appendedNoteList
             , txt = appendedTxt
             } ! []
     AreaUpdate str -> { model | txt = str } ! []
     AreaBlurred ->
         let trimmedTxt = String.trim model.txt
         in { model
-        | strCraftsList = matchCrafts trimmedTxt
-        , strList = splitTxt trimmedTxt
+        | craftList = matchCrafts trimmedTxt
+        , noteList = splitTxt trimmedTxt
         , txt = trimmedTxt
         } ! []
 
@@ -142,7 +163,7 @@ view model =
 
 viewCraftColumn model =
     td [ style tableCellStyle25 ]
-    [ renderList2 ( "NoteCraft" :: ( uniqueList model.strCraftsList ) ) ]
+    [ renderList2 ( "NoteCraft" :: ( uniqueCraftList model.craftList ) ) ]
 
 viewNoteColumn model =
     td [ style tableCellStyle40 ]
@@ -150,7 +171,7 @@ viewNoteColumn model =
         [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value model.magicField ] [ ] ]
         , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ] --▼ 🔽
         ]
-    , listView model.strList
+    , listView model.noteList
     ]
 
 viewTxtColumn model =
@@ -164,9 +185,9 @@ viewTxtColumn model =
 -- INIT
 init : ( Model, Cmd Msg )
 init =
-    { strCraftsList = matchCrafts initTxt
+    { craftList = matchCrafts initTxt
     , magicField = ""
-    , strList = splitTxt initTxt
+    , noteList = splitTxt initTxt
     , txt = initTxt
     } ! []
 
