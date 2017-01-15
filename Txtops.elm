@@ -18,6 +18,7 @@ type alias NoteList = List Note
 type alias NoteSet = Set Note
 type alias Craft = String
 type alias CraftList = List Craft
+type alias ID = Int
 
 -------------------------------------------------------
 -- StringList
@@ -63,12 +64,12 @@ matchCrafts str =
     |> List.foldr (++) []
 
 -- FUNCTIONS ID
-regexIDs : String -> List Regex.Match
-regexIDs str = find All (regex "\\[#(\\d+)") str
+regexIDs : Txt -> List Regex.Match
+regexIDs txt = find All (regex "\\[#(\\d+)") txt
 
-maxID : String -> Int
-maxID str =
-    regexIDs str
+maxID : Txt -> ID
+maxID txt =
+    regexIDs txt
     |> List.map extractSubmatches
     |> List.foldr (++) []
     |> List.map String.toInt
@@ -76,9 +77,9 @@ maxID str =
     |> List.maximum
     |> Maybe.withDefault 1001
 
-newID : String -> String
-newID str =
-    (maxID str) + 1 |> toString
+newID : Txt -> String
+newID txt =
+    (maxID txt) + 1 |> toString
 
 -------------------------------------------------------
 -- Model
