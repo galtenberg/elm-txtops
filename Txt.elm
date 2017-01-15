@@ -3,7 +3,7 @@ module Txt exposing (..)
 import String exposing (..)
 import Tuple exposing (..)
 
-initText = """
+initTxt = """
 Your control panel
 
 - Color: Blue

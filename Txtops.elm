@@ -12,6 +12,13 @@ import Txt exposing (..)
 import TxtStyles exposing (..)
 
 
+type alias Txt = String
+type alias Note = String
+type alias NoteList = List Note
+type alias NoteSet = Set Note
+type alias Craft = String
+type alias CraftList = List Craft
+
 -------------------------------------------------------
 -- StringList
 
@@ -31,8 +38,8 @@ renderList2 : StringList -> Html Msg
 renderList2 list = list |> List.map liText2 |> div []
 
 -- FUNCTIONS UTIL
-splitStrings : String -> StringList
-splitStrings str = String.split "\n\n" str
+splitTxt : Txt -> NoteList
+splitTxt txt = String.split "\n\n" txt
 
 joinStringList : StringList -> String
 joinStringList list = join "\n\n" list
@@ -41,8 +48,8 @@ uniqueList : List comparable -> List comparable
 uniqueList list = list |> Set.fromList |> Set.toList
 
 -- FUNCTIONS CRAFTS
-regexCrafts : String -> List Regex.Match
-regexCrafts str = find All (regex ".*\\s+(\\w+:\\s*\\w+)") str
+regexCrafts : Txt -> List Regex.Match
+regexCrafts txt = find All (regex ".*\\s+(\\w+:\\s*\\w+)") txt
 
 extractSubmatches : Regex.Match -> List String
 extractSubmatches match =
@@ -81,7 +88,7 @@ type alias Model =
     { strCraftsList : StringList
     , strMagicField : String
     , strList : StringList
-    , strArea : String
+    , txt : Txt
     }
 
 
@@ -101,23 +108,23 @@ update msg model = case msg of
         let
             trimmedField = String.trim model.strMagicField
             emptyField = String.isEmpty trimmedField
-            fieldWithID = trimmedField ++ "\n[#" ++ (newID model.strArea) ++ "]"
-            combinedArea = if emptyField then model.strArea else model.strArea ++ "\n\n" ++ fieldWithID
+            fieldWithID = trimmedField ++ "\n[#" ++ (newID model.txt) ++ "]"
+            appendedTxt = if emptyField then model.txt else model.txt ++ "\n\n" ++ fieldWithID
             combinedList = if emptyField then model.strList else model.strList ++ [ trimmedField ]
         in
             { model
-            | strCraftsList = matchCrafts combinedArea
+            | strCraftsList = matchCrafts appendedTxt
             , strMagicField = ""
             , strList = combinedList
-            , strArea = combinedArea
+            , txt = appendedTxt
             } ! []
-    AreaUpdate str -> { model | strArea = str } ! []
+    AreaUpdate str -> { model | txt = str } ! []
     AreaBlurred ->
-        let trimmedArea = String.trim model.strArea
+        let trimmedTxt = String.trim model.txt
         in { model
-        | strCraftsList = matchCrafts trimmedArea
-        , strList = splitStrings trimmedArea
-        , strArea = trimmedArea
+        | strCraftsList = matchCrafts trimmedTxt
+        , strList = splitTxt trimmedTxt
+        , txt = trimmedTxt
         } ! []
 
 
@@ -148,7 +155,7 @@ viewNoteColumn strOpsModel =
 viewTxtColumn strOpsModel =
     td [ style tableCellStyle35 ]
     [ textarea
-      [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.strArea, style readTextAreaStyle ]
+      [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.txt, style txtAreaStyle ]
       [ ]
     ]
 
@@ -156,10 +163,10 @@ viewTxtColumn strOpsModel =
 -- INIT
 init : ( Model, Cmd Msg )
 init =
-    { strCraftsList = matchCrafts initText
+    { strCraftsList = matchCrafts initTxt
     , strMagicField = ""
-    , strList = splitStrings initText
-    , strArea = initText
+    , strList = splitTxt initTxt
+    , txt = initTxt
     } ! []
 
 

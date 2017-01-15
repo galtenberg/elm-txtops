@@ -69,7 +69,7 @@ magicButtonStyle2 =
   , "border" => "0"
   ]
 
-readTextAreaStyle =
+txtAreaStyle =
   [ "background-color" => "rgb(233, 237, 237)"
   , "padding" => "10px"
   , "width" => "100%"
