@@ -87,7 +87,7 @@ newID txt =
 -- MODEL
 type alias Model =
     { strCraftsList : StringList
-    , strMagicField : String
+    , magicField : Note
     , strList : StringList
     , txt : Txt
     }
@@ -104,10 +104,10 @@ type Msg
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
-    FieldUpdate str -> { model | strMagicField = str } ! []
+    FieldUpdate str -> { model | magicField = str } ! []
     ButtonPressed ->
         let
-            trimmedField = String.trim model.strMagicField
+            trimmedField = String.trim model.magicField
             emptyField = String.isEmpty trimmedField
             fieldWithID = trimmedField ++ "\n[#" ++ (newID model.txt) ++ "]"
             appendedTxt = if emptyField then model.txt else model.txt ++ "\n\n" ++ fieldWithID
@@ -115,7 +115,7 @@ update msg model = case msg of
         in
             { model
             | strCraftsList = matchCrafts appendedTxt
-            , strMagicField = ""
+            , magicField = ""
             , strList = combinedList
             , txt = appendedTxt
             } ! []
@@ -131,32 +131,32 @@ update msg model = case msg of
 
 -- VIEW
 view : Model -> Html Msg
-view strOpsModel =
+view model =
     table [ style tableStyle ]
     [ tr [ style topAlignStyle ]
-      [ viewCraftColumn strOpsModel
-      , viewNoteColumn strOpsModel
-      , viewTxtColumn strOpsModel
+      [ viewCraftColumn model
+      , viewNoteColumn model
+      , viewTxtColumn model
       ]
     ]
 
-viewCraftColumn strOpsModel =
+viewCraftColumn model =
     td [ style tableCellStyle25 ]
-    [ renderList2 ( "NoteCraft" :: ( uniqueList strOpsModel.strCraftsList ) ) ]
+    [ renderList2 ( "NoteCraft" :: ( uniqueList model.strCraftsList ) ) ]
 
-viewNoteColumn strOpsModel =
+viewNoteColumn model =
     td [ style tableCellStyle40 ]
     [ div [ style magicBox ]
-        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value strOpsModel.strMagicField ] [ ] ]
+        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value model.magicField ] [ ] ]
         , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ] --▼ 🔽
         ]
-    , listView strOpsModel.strList
+    , listView model.strList
     ]
 
-viewTxtColumn strOpsModel =
+viewTxtColumn model =
     td [ style tableCellStyle35 ]
     [ textarea
-      [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value strOpsModel.txt, style txtAreaStyle ]
+      [ rows 40, onBlur AreaBlurred, onInput AreaUpdate, value model.txt, style txtAreaStyle ]
       [ ]
     ]
 
@@ -165,7 +165,7 @@ viewTxtColumn strOpsModel =
 init : ( Model, Cmd Msg )
 init =
     { strCraftsList = matchCrafts initTxt
-    , strMagicField = ""
+    , magicField = ""
     , strList = splitTxt initTxt
     , txt = initTxt
     } ! []
