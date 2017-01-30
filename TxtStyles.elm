@@ -40,6 +40,7 @@ magicBoxTextStyle =
   , "margin" => "0"
   , "width" => "100%"
   , "box-sizing" => "border-box"
+  , "outline" => "none"
   ] ++ lightBorderStyle ++ defaultFont
 magicBoxButtonWrapperStyle = [ "margin-top" => "-6px" ]
 magicBoxButtonStyle =

@@ -39,7 +39,7 @@ type alias Craft = String
 type alias CraftList = List Craft
 
 regexCrafts : Txt -> List Regex.Match
-regexCrafts txt = find All (regex ".*\\s+(\\w+:\\s*\\w+)") txt
+regexCrafts txt = find All (regex ".*\\s+[-+]\\s*(\\w+:\\s*.+)") txt
 
 matchCrafts : Txt -> NoteList
 matchCrafts txt =
