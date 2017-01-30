@@ -28,12 +28,9 @@ listView : NoteList -> Html Msg
 listView noteList = renderList noteList
 
 liText1 l = div [ style magicButtonStyle ] [ text l ]
-liText2 l = div [ style magicButtonStyle2 ] [ text l ]
 
 renderList : NoteList -> Html Msg
 renderList list = list |> List.map liText1 |> div []
-renderList2 : NoteList -> Html Msg
-renderList2 list = list |> List.map liText2 |> div []
 
 
 -------------------------------------------------------
@@ -115,8 +112,9 @@ type alias Model =
 
 -- MESSAGES
 type Msg
-    = FieldUpdate String
-    | ButtonPressed
+    = MagicFieldUpdate String
+    | MagicButtonPressed
+    | CraftPressed String
     | AreaUpdate String
     | AreaBlurred
 
@@ -124,8 +122,8 @@ type Msg
 -- UPDATE
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model = case msg of
-    FieldUpdate str -> { model | magicField = str } ! []
-    ButtonPressed ->
+    MagicFieldUpdate str -> { model | magicField = str } ! []
+    MagicButtonPressed ->
         let
             newNote = buildNote model.magicField
             newNoteID = newID model.txt
@@ -139,6 +137,11 @@ update msg model = case msg of
             , noteList = appendedNoteList
             , txt = appendedTxt
             } ! []
+    CraftPressed str ->
+        let
+            appendedMagicField = model.magicField ++ "\n- " ++ str
+        in
+            { model | magicField = appendedMagicField } ! []
     AreaUpdate str -> { model | txt = str } ! []
     AreaBlurred ->
         let trimmedTxt = String.trim model.txt
@@ -164,11 +167,14 @@ viewCraftColumn model =
     td [ style tableCellStyle25 ]
     [ renderList2 ( "NoteCraft" :: ( uniqueCraftList model.craftList ) ) ]
 
+liText2 l = div [ style magicButtonStyle2, onClick (CraftPressed l) ] [ text l ]
+renderList2 list = list |> List.map liText2 |> div []
+
 viewNoteColumn model =
     td [ style tableCellStyle40 ]
     [ div [ style magicBox ]
-        [ div [] [ textarea [ rows 4, onInput FieldUpdate, style magicBoxTextStyle, value model.magicField ] [ ] ]
-        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick ButtonPressed ] [ text "▼" ] ] --▼ 🔽
+        [ div [] [ textarea [ rows 4, onInput MagicFieldUpdate, style magicBoxTextStyle, value model.magicField ] [ ] ]
+        , div [ style magicBoxButtonWrapperStyle ] [ button [ style magicBoxButtonStyle, onClick MagicButtonPressed ] [ text "▼" ] ] --▼ 🔽
         ]
     , listView model.noteList
     ]
